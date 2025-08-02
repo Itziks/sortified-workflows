@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${DB_POSTGRESDB_DATABASE}
+      POSTGRES_USER: ${DB_POSTGRESDB_USER}
+      POSTGRES_PASSWORD: ${DB_POSTGRESDB_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      # Core n8n configuration
+      N8N_HOST: ${N8N_HOST}
+      N8N_PORT: ${N8N_PORT}
+      WEBHOOK_URL: ${WEBHOOK_URL}  # Critical for webhook functionality
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}  # Required for workflow encryption
+      
+      # Binary data storage (local filesystem for MVP)
+      N8N_DEFAULT_BINARY_DATA_MODE: ${N8N_DEFAULT_BINARY_DATA_MODE}
+      N8N_BINARY_DATA_FOLDER: ${N8N_BINARY_DATA_FOLDER}
+      
+      # Database configuration
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: ${DB_POSTGRESDB_HOST}
+      DB_POSTGRESDB_PORT: ${DB_POSTGRESDB_PORT}
+      DB_POSTGRESDB_DATABASE: ${DB_POSTGRESDB_DATABASE}
+      DB_POSTGRESDB_USER: ${DB_POSTGRESDB_USER}
+      DB_POSTGRESDB_PASSWORD: ${DB_POSTGRESDB_PASSWORD}
+      
+      # Execution management
+      EXECUTIONS_MODE: ${EXECUTIONS_MODE}
+      EXECUTIONS_DATA_PRUNE: ${EXECUTIONS_DATA_PRUNE}
+      EXECUTIONS_DATA_MAX_AGE: ${EXECUTIONS_DATA_MAX_AGE}
+      
+      # --- Future S3 configuration (commented for later migration) ---
+      # S3_ENDPOINT: ${S3_ENDPOINT}
+      # S3_REGION: ${S3_REGION}
+      # S3_BUCKET: ${S3_BUCKET}
+      # S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      # S3_SECRET_KEY: ${S3_SECRET_KEY}
+      # S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE}
+      # N8N_BINARY_DATA_S3_BUCKET_SUBFOLDER: ${N8N_BINARY_DATA_S3_BUCKET_SUBFOLDER}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - n8n_binaries:/home/node/.n8n/binary-data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:5678/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pg_data:
+  n8n_data:
+  n8n_binaries:

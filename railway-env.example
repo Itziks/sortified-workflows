@@ -1,0 +1,44 @@
+# Railway Environment Variables for n8n Staging
+# Copy these to your Railway project environment variables
+
+# ---- Core n8n Settings (Railway) ----
+N8N_HOST=0.0.0.0
+N8N_PORT=$PORT
+WEBHOOK_URL=https://n8n-staging.sortified.net/
+N8N_ENCRYPTION_KEY=64bee99beae89da0c16f26a35160b7b81746ca8c297b5ae04c8eb7b32444f598
+
+# ---- Railway-specific Configuration ----
+NODE_ENV=production
+N8N_LOG_LEVEL=info
+N8N_LOG_OUTPUT=console
+
+# ---- Database (Railway Managed PostgreSQL) ----
+# Railway automatically provides DATABASE_URL
+# n8n will parse this automatically
+DB_TYPE=postgresdb
+DB_POSTGRESDB_SSL=true
+
+# ---- Binary Data Storage (Railway Volumes) ----
+N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+N8N_BINARY_DATA_FOLDER=/home/node/.n8n/binary-data
+
+# ---- Execution Management (Production Safe) ----
+EXECUTIONS_MODE=regular
+EXECUTIONS_DATA_PRUNE=true
+EXECUTIONS_DATA_MAX_AGE=168
+EXECUTIONS_DATA_SAVE_ON_ERROR=all
+EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+
+# ---- Railway Scaling & Performance ----
+N8N_METRICS=true
+N8N_DIAGNOSTICS_ENABLED=false
+N8N_VERSION_NOTIFICATIONS_ENABLED=false
+
+# ---- Future S3 Configuration (When Ready) ----
+# N8N_DEFAULT_BINARY_DATA_MODE=s3
+# S3_ENDPOINT=
+# S3_REGION=
+# S3_BUCKET=n8n-staging-binary-data
+# S3_ACCESS_KEY=
+# S3_SECRET_KEY=
+# S3_FORCE_PATH_STYLE=true
