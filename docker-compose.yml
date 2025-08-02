@@ -56,11 +56,7 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_binaries:/home/node/.n8n/binary-data
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:5678/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # Health check handled externally by Railway in production
     restart: unless-stopped
 
 volumes:
