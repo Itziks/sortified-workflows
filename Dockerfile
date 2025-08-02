@@ -20,7 +20,7 @@ EXPOSE 5678
 
 # Health check endpoint for Railway
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
-    CMD curl -f http://localhost:${PORT:-5678}/healthz || exit 1
+    CMD curl -f http://localhost:${PORT:-5678}/health || exit 1
 
 # Railway-compatible startup command
 CMD ["n8n", "start"]
