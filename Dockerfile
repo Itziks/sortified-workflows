@@ -18,9 +18,7 @@ USER node
 # Expose port (Railway will override with PORT env var)
 EXPOSE 5678
 
-# Health check endpoint for Railway
-HEALTHCHECK --interval=10s --timeout=5s --retries=5 \
-    CMD curl -f http://localhost:${PORT:-5678}/health || exit 1
+# Railway handles health checks externally via railway.json
 
 # Railway-compatible startup command
 CMD ["n8n", "start"]
