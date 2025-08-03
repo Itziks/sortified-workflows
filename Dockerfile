@@ -4,6 +4,11 @@ FROM n8nio/n8n:latest
 # Install curl for Railway health checks
 USER root
 RUN apk add --no-cache curl
+
+# Copy startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 USER node
 
 # Set Railway-compatible defaults
@@ -15,5 +20,5 @@ ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 # Expose port for Railway
 EXPOSE 5678
 
-# Use the default entrypoint and command from the base image
-CMD ["start"]
+# Use custom startup script
+CMD ["/start.sh"]
