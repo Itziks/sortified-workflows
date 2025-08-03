@@ -6,8 +6,8 @@ USER root
 RUN apk add --no-cache curl
 
 # Copy startup script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 USER node
 
@@ -20,5 +20,5 @@ ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 # Expose port for Railway
 EXPOSE 5678
 
-# Use custom startup script
-CMD ["/bin/sh", "/start.sh"]
+# Use custom startup script with proper shell
+ENTRYPOINT ["/usr/local/bin/start.sh"]
