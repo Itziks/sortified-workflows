@@ -5,9 +5,17 @@ FROM n8nio/n8n:latest
 USER root
 RUN apk add --no-cache curl
 
-# Copy startup script
-COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
+# Create a simple wrapper script to map Railway vars to n8n format
+RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh && \
+    echo 'if [ -n "$PGHOST" ]; then' >> /usr/local/bin/start-n8n.sh && \
+    echo '  export DB_POSTGRESDB_HOST="$PGHOST"' >> /usr/local/bin/start-n8n.sh && \
+    echo '  export DB_POSTGRESDB_PORT="$PGPORT"' >> /usr/local/bin/start-n8n.sh && \
+    echo '  export DB_POSTGRESDB_DATABASE="$PGDATABASE"' >> /usr/local/bin/start-n8n.sh && \
+    echo '  export DB_POSTGRESDB_USER="$PGUSER"' >> /usr/local/bin/start-n8n.sh && \
+    echo '  export DB_POSTGRESDB_PASSWORD="$PGPASSWORD"' >> /usr/local/bin/start-n8n.sh && \
+    echo 'fi' >> /usr/local/bin/start-n8n.sh && \
+    echo 'exec n8n start' >> /usr/local/bin/start-n8n.sh && \
+    chmod +x /usr/local/bin/start-n8n.sh
 
 USER node
 
@@ -20,5 +28,5 @@ ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 # Expose port for Railway
 EXPOSE 5678
 
-# Use custom startup script with proper shell
-ENTRYPOINT ["/usr/local/bin/start.sh"]
+# Use the wrapper script
+CMD ["sh", "/usr/local/bin/start-n8n.sh"]
