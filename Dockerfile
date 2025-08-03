@@ -15,7 +15,9 @@ RUN echo '#!/bin/sh' > /usr/local/bin/start-n8n.sh && \
     echo '  export DB_POSTGRESDB_PASSWORD="$PGPASSWORD"' >> /usr/local/bin/start-n8n.sh && \
     echo 'fi' >> /usr/local/bin/start-n8n.sh && \
     echo 'exec n8n start' >> /usr/local/bin/start-n8n.sh && \
-    chmod +x /usr/local/bin/start-n8n.sh
+    chmod +x /usr/local/bin/start-n8n.sh && \
+    ls -la /bin/ && \
+    which sh
 
 USER node
 
@@ -28,5 +30,5 @@ ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
 # Expose port for Railway
 EXPOSE 5678
 
-# Use the wrapper script
-CMD ["sh", "/usr/local/bin/start-n8n.sh"]
+# Use the wrapper script directly as executable
+ENTRYPOINT ["/usr/local/bin/start-n8n.sh"]
