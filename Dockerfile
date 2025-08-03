@@ -14,5 +14,5 @@ ENV DB_TYPE=postgresdb
 # Expose port for Railway
 EXPOSE 5678
 
-# Use the same startup command as the official image
-CMD ["n8n", "start"]
+# Use the default entrypoint and command from the base image
+CMD ["start"]
